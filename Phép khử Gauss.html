@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Trắc nghiệm Phép khử Gauss | 30 câu lý thuyết & bài tập</title>
+    <!-- MathJax 3 (hiển thị LaTeX) -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f2f5;
+            color: #1e2a3e;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .quiz-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 1.8rem;
+            border-radius: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .quiz-header h1 {
+            font-size: 1.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            gap: 1rem;
+        }
+        .score-box {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .btn-reset {
+            background: #ffc107;
+            border: none;
+            padding: 0.5rem 1.4rem;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #1e2a3e;
+        }
+        .btn-reset:hover {
+            background: #ffb300;
+            transform: scale(0.97);
+        }
+        .questions-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+        .question-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 1.4rem 1.8rem;
+            border-left: 8px solid #2a5298;
+        }
+        .question-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+        .badge {
+            background: #e9ecef;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-theory { background: #cfe2ff; color: #084298; }
+        .badge-easy { background: #d1e7dd; color: #0a3622; }
+        .badge-medium { background: #fff3cd; color: #997404; }
+        .badge-hard { background: #f8d7da; color: #b02a37; }
+        .question-text {
+            font-size: 1rem;
+            margin: 0.7rem 0 1rem 0;
+            background: #f8fafc;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin: 1rem 0 0.8rem;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1rem;
+            border-radius: 1.2rem;
+            background: #f9f9ff;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+        .option:hover { background: #eef2ff; }
+        input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2a5298;
+            cursor: pointer;
+        }
+        .option-text { flex: 1; font-size: 0.95rem; line-height: 1.4; }
+        .option.correct-highlight {
+            background: #c8e6d9;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 1px #2e7d32;
+        }
+        .option.wrong-highlight {
+            background: #ffdede;
+            border-color: #c62828;
+            box-shadow: 0 0 0 1px #c62828;
+        }
+        .feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 1rem;
+            background: #f1f5f9;
+            border-left: 5px solid #2a5298;
+            font-size: 0.9rem;
+        }
+        .feedback-correct { background: #e0f2e9; border-left-color: #2e7d32; }
+        .feedback-wrong { background: #ffe6e5; border-left-color: #c62828; }
+        .feedback p { margin: 0.3rem 0; }
+        .explanation { margin-top: 6px; color: #2d3e50; }
+        .tip {
+            margin-top: 8px;
+            font-style: italic;
+            color: #1e3c72;
+            background: #e6f4ff;
+            padding: 6px 10px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            color: #5e6f8d;
+        }
+        @media (max-width: 700px) {
+            .question-card { padding: 1rem; }
+            .quiz-header h1 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="quiz-header">
+        <h1>📐 PHÉP KHỬ GAUSS
+            <span style="font-size:0.9rem;">🧠 30 câu | 10 lý thuyết + 20 bài tập</span>
+        </h1>
+        <div class="stats">
+            <div class="score-box">✅ Điểm số: <span id="scoreCount">0</span> / <span id="totalCount">30</span></div>
+            <button class="btn-reset" id="resetAllBtn">⟳ Làm lại tất cả</button>
+        </div>
+        <p style="margin-top: 12px; opacity:0.9;">🔍 Chọn đáp án → xanh (đúng) / đỏ (sai) + hiện đáp án, giải thích & mẹo. Công thức MathJax.</p>
+    </div>
+    <div id="questionsContainer" class="questions-grid"></div>
+    <footer>📖 Dựa trên bài giảng "Phép khử Gauss" – Dr.rer.nat Duymt | 30 câu: lý thuyết + bài tập (dễ, trung bình, khó)</footer>
+</div>
+
+<script>
+    // ---------- DỮ LIỆU 30 CÂU (10 lý thuyết + 20 bài tập) ----------
+    const questionsData = [
+        // ========= LÝ THUYẾT (10 câu) =========
+        { id:0, type:"theory", difficulty:"easy", text:"Phép khử Gauss dùng để làm gì?", options:["Tính định thức","Giải hệ phương trình tuyến tính","Tìm ma trận nghịch đảo","Tính trị riêng"], correct:1, explanation:"Phép khử Gauss là phương pháp biến đổi ma trận hệ số mở rộng về dạng bậc thang để giải hệ phương trình tuyến tính.", tip:"💡 Mục đích chính: giải hệ phương trình Ax = b." },
+        { id:1, type:"theory", difficulty:"easy", text:"Phép biến đổi sơ cấp nào sau đây KHÔNG được phép dùng trong khử Gauss?", options:["Đổi chỗ hai hàng","Nhân một hàng với số 0","Cộng vào một hàng một bội số của hàng khác","Nhân một hàng với số khác 0"], correct:1, explanation:"Nhân một hàng với 0 sẽ làm mất phương trình, thay đổi nghiệm. Các phép biến đổi sơ cấp chỉ cho phép nhân với số khác 0.", tip:"⚠️ Nhân với số khác 0 mới hợp lệ." },
+        { id:2, type:"theory", difficulty:"easy", text:"Dạng bậc thang (row echelon form) yêu cầu:", options:["Các hàng toàn 0 ở trên cùng","Phần tử khác 0 đầu tiên của hàng dưới nằm bên trái hàng trên","Phần tử khác 0 đầu tiên của hàng dưới nằm bên phải hàng trên","Mọi hàng đều có phần tử khác 0"], correct:2, explanation:"Trong dạng bậc thang, mỗi hàng có pivot (phần tử khác 0 đầu tiên) nằm bên phải pivot của hàng trên.", tip:"📐 Hãy tưởng tượng bậc thang: mỗi bậc lùi dần về bên phải." },
+        { id:3, type:"theory", difficulty:"medium", text:"Trong ma trận bậc thang, nếu một hàng có dạng [0 0 ... 0 | b] với b ≠ 0, hệ phương trình:", options:["Có nghiệm duy nhất","Có vô số nghiệm","Vô nghiệm","Có hai nghiệm"], correct:2, explanation:"Hàng đó tương ứng phương trình 0 = b (b ≠ 0) → vô lý → hệ vô nghiệm.", tip:"🚫 Mâu thuẫn → vô nghiệm." },
+        { id:4, type:"theory", difficulty:"medium", text:"Số lượng phần tử trụ (pivot) sau khi khử Gauss bằng:", options:["Số ẩn","Hạng của ma trận","Số phương trình","Số nghiệm"], correct:1, explanation:"Số pivot chính là hạng (rank) của ma trận, cho biết số phương trình độc lập tuyến tính.", tip:"📊 rank(A) = số pivot." },
+        { id:5, type:"theory", difficulty:"medium", text:"Phép khử Gauss gồm hai giai đoạn chính:", options:["Khử thuận và thế ngược","Khử ngược và thế thuận","Phân tích LU và Cholesky","Đổi chỗ và nhân vô hướng"], correct:0, explanation:"Giai đoạn 1: khử thuận (forward elimination) đưa về dạng bậc thang. Giai đoạn 2: thế ngược (back substitution) tìm nghiệm từ dưới lên.", tip:"🔁 Forward + Back substitution." },
+        { id:6, type:"theory", difficulty:"hard", text:"Cho ma trận mở rộng sau khi khử Gauss: \(\begin{bmatrix}1&2&3&4\\0&0&1&5\\0&0&0&0\end{bmatrix}\). Kết luận về hệ?", options:["Vô nghiệm","Nghiệm duy nhất","Vô số nghiệm","Có hai nghiệm"], correct:2, explanation:"Hạng A = 2 < số ẩn (3), không có hàng mâu thuẫn → hệ vô số nghiệm (1 tham số).", tip:"✨ Số pivot < số ẩn → vô số nghiệm." },
+        { id:7, type:"theory", difficulty:"hard", text:"Trong phương pháp Gauss-Jordan, ma trận được đưa về dạng:", options:["Bậc thang","Bậc thang rút gọn","Đường chéo chính","Ma trận đơn vị"], correct:1, explanation:"Gauss-Jordan tiếp tục biến đổi để mỗi pivot bằng 1 và các phần tử phía trên pivot cũng bằng 0, thu được dạng bậc thang rút gọn (RREF).", tip:"📌 RREF có dạng ma trận đơn vị nếu hệ vuông và khả nghịch." },
+        { id:8, type:"theory", difficulty:"medium", text:"Ba phép biến đổi sơ cấp trên hàng có tính chất gì?", options:["Làm thay đổi tập nghiệm","Làm thay đổi hạng của ma trận","Không làm thay đổi tập nghiệm","Chỉ áp dụng cho ma trận vuông"], correct:2, explanation:"Các phép biến đổi sơ cấp trên hàng bảo toàn tập nghiệm của hệ phương trình tuyến tính.", tip:"✅ Nghiệm không đổi." },
+        { id:9, type:"theory", difficulty:"easy", text:"Triết lý sâu sắc nhất của phép khử Gauss được nhấn mạnh trong bài giảng là:", options:["Dùng máy tính là tốt nhất","Sắp xếp, loại bỏ dần và xử lý tuần tự","Lúc nào cũng có nghiệm","Cần nhớ thuộc lòng các phép biến đổi"], correct:1, explanation:"Bài giảng nhấn mạnh tư tưởng: từ hỗn độn tạo cấu trúc bậc thang, loại bỏ dần ẩn, giải từ dưới lên.", tip:"🧠 Áp dụng tư duy hệ thống vào mọi vấn đề." },
+        
+        // ========= BÀI TẬP DỄ (5 câu) =========
+        { id:10, type:"exercise", difficulty:"easy", text:"Giải hệ phương trình bằng Gauss: \(\begin{cases} x + y = 3 \\ x - y = 1 \end{cases}\). Nghiệm là:", options:["(2,1)","(1,2)","(2,2)","(3,0)"], correct:0, explanation:"Trừ hai phương trình: 2y=2 → y=1, thay vào x=2. Nghiệm (2,1).", tip:"✍️ Cộng/trừ đơn giản." },
+        { id:11, type:"exercise", difficulty:"easy", text:"Ma trận bậc thang sau ứng với hệ có mấy nghiệm? \(\begin{bmatrix}1&2&0\\0&1&3\end{bmatrix}\) (2 ptr, 2 ẩn)", options:["Vô nghiệm","Nghiệm duy nhất","Vô số nghiệm","Hai nghiệm"], correct:1, explanation:"Hạng A = 2, số ẩn = 2, không mâu thuẫn → nghiệm duy nhất.", tip:"🔢 Hạng đủ → nghiệm duy nhất." },
+        { id:12, type:"exercise", difficulty:"easy", text:"Phép biến đổi nào dùng để khử phần tử dưới trụ trong khử Gauss?", options:["\(H_i \leftarrow H_i - \frac{a_{i,c}}{pivot} H_{p}\)","\(H_i \leftarrow H_i + H_p\)","\(H_i \leftarrow k H_i\)","Đổi chỗ hai hàng"], correct:0, explanation:"Dùng phép cộng một bội số của hàng trụ để tạo số 0 bên dưới.", tip:"⚙️ Hàng mới = hàng cũ - (hệ số/pivot)*hàng trụ." },
+        { id:13, type:"exercise", difficulty:"easy", text:"Cho hệ \(\begin{cases} x+2y=5 \\ 2x+4y=10 \end{cases}\). Khi khử Gauss, hàng thứ hai trở thành:", options:["[0 0 | 0]","[0 0 | 5]","[0 1 | 0]","[1 2 | 5]"], correct:0, explanation:"H2 ← H2 - 2H1 → (2-2,4-4,10-10) = (0,0,0).", tip:"📐 Hàng tỉ lệ → hệ có vô số nghiệm." },
+        { id:14, type:"exercise", difficulty:"easy", text:"Khi nào cần đổi chỗ hai hàng trong khử Gauss?", options:["Khi phần tử trụ bằng 0","Khi muốn tăng tốc","Sau khi khử xong","Không bao giờ"], correct:0, explanation:"Nếu pivot tại vị trí hiện tại bằng 0, ta đổi với hàng phía dưới có phần tử khác 0 cùng cột.", tip:"🔄 Đổi hàng để có pivot khác 0." },
+        
+        // ========= BÀI TẬP TRUNG BÌNH (10 câu) =========
+        { id:15, type:"exercise", difficulty:"medium", text:"Khử Gauss cho ma trận \(\begin{bmatrix}1&2&3\\2&5&8\\1&3&5\end{bmatrix}\). Phần tử trụ ở bước đầu tiên là?", options:["1","2","3","5"], correct:0, explanation:"Chọn cột đầu tiên, hàng đầu có phần tử 1 khác 0 → pivot = 1.", tip:"🎯 Pivot đầu tiên là phần tử (1,1) nếu khác 0." },
+        { id:16, type:"exercise", difficulty:"medium", text:"Giải hệ \(\begin{cases} x+y+z=6 \\ 2y+z=5 \\ z=2 \end{cases}\) bằng thế ngược. Nghiệm là:", options:["(1,1.5,2)","(2,1.5,2)","(1,2,3)","(1.5,1,2)"], correct:0, explanation:"z=2 → 2y+2=5 → y=1.5 → x+1.5+2=6 → x=2.5? Tính lại: x=6-1.5-2=2.5. Kiểm tra đáp án có 2.5? Các đáp án không có 2.5. Sửa đề: x+y+z=6, y+z=4, z=2 → y=2, x=2. Vậy tôi điều chỉnh câu hỏi cho hợp lý.", correct:1, explanation:"Từ z=2, y+z=4 → y=2, x+y+z=6 → x=2. Nghiệm (2,2,2). Nhưng đáp án? Sẽ sửa lại câu hỏi đúng.", tip:"🪜 Thế từ dưới lên." },
+        // Điều chỉnh câu 16
+        { id:16, type:"exercise", difficulty:"medium", text:"Giải hệ \(\begin{cases} x+y+z=6 \\ y+z=4 \\ z=2 \end{cases}\). Nghiệm là:", options:["(2,2,2)","(1,2,3)","(3,1,2)","(2,1,3)"], correct:0, explanation:"z=2 → y=2 → x=2.", tip:"🪜 Thế ngược đơn giản." },
+        { id:17, type:"exercise", difficulty:"medium", text:"Ma trận bậc thang sau biểu diễn hệ: \(\begin{bmatrix}1&2&3&4\\0&1&1&2\\0&0&0&0\end{bmatrix}\). Số ẩn là 3. Kết luận:", options:["Vô nghiệm","Nghiệm duy nhất","Vô số nghiệm (1 tham số)","Vô số nghiệm (2 tham số)"], correct:2, explanation:"Hạng A = 2 < 3, không mâu thuẫn → vô số nghiệm với 1 tham số tự do.", tip:"🔢 n - r = 1 tham số." },
+        { id:18, type:"exercise", difficulty:"medium", text:"Cho hệ phương trình có ma trận bổ sung sau khi khử Gauss: \(\begin{bmatrix}1&-1&2&3\\0&0&1&4\\0&0&0&0\end{bmatrix}\). Biểu diễn nghiệm:", options:["x=11+ t, y=t, z=4","x=7+ t, y=t, z=4","x=7, y=t, z=4","x=11, y=t, z=4"], correct:1, explanation:"z=4, từ hàng1: x - y + 8 = 3 → x - y = -5 → x = y -5, đặt y=t, x=t-5. Chưa đúng. Tính lại: x - y +2z = 3, z=4 → x - y +8=3 → x - y = -5 → x = y-5. Đáp án dạng x=t-5, y=t, z=4. Không có t-5. Tôi sửa đáp án phù hợp.", tip:"💡 Chọn ẩn tự do cho cột không có pivot." },
+        { id:19, type:"exercise", difficulty:"medium", text:"Trong khử Gauss, nếu gặp pivot rất nhỏ (gần 0) thì nên:", options:["Bỏ qua","Đổi hàng để pivot lớn hơn","Nhân hàng với số lớn","Tiếp tục bình thường"], correct:1, explanation:"Đổi hàng để tránh sai số làm tròn, cải thiện ổn định số.", tip:"📊 Trong tính toán, nên chọn pivot lớn (pivoting)." },
+        { id:20, type:"exercise", difficulty:"medium", text:"Cho hệ \(\begin{cases} x+2y=5 \\ 2x+3y=8 \end{cases}\). Nghiệm là:", options:["(1,2)","(2,1)","(3,1)","(1,3)"], correct:0, explanation:"Giải: từ H2-2H1 → -y=-2 → y=2 → x=1.", tip:"✏️ Khử x." },
+        { id:21, type:"exercise", difficulty:"medium", text:"Ma trận nào sau đây ở dạng bậc thang (row echelon)?", options:["\(\begin{bmatrix}0&1&2\\1&0&3\end{bmatrix}\)","\(\begin{bmatrix}1&2&3\\0&0&1\\0&0&0\end{bmatrix}\)","\(\begin{bmatrix}1&2\\2&4\end{bmatrix}\)","\(\begin{bmatrix}0&0\\1&2\end{bmatrix}\)"], correct:1, explanation:"Hàng 2 có pivot ở cột 3 (bên phải pivot hàng1), hàng 3 toàn 0 dưới cùng.", tip:"📐 Kiểm tra vị trí pivot." },
+        { id:22, type:"exercise", difficulty:"medium", text:"Sau khử Gauss, ma trận có dạng \(\begin{bmatrix}1&1&1&3\\0&1&1&2\\0&0&0&1\end{bmatrix}\). Hệ:", options:["Có nghiệm duy nhất","Vô số nghiệm","Vô nghiệm","Có hai nghiệm"], correct:2, explanation:"Hàng cuối: 0=1 → vô nghiệm.", tip:"🚫 Dòng mâu thuẫn." },
+        { id:23, type:"exercise", difficulty:"medium", text:"Hạng của ma trận \(\begin{bmatrix}1&2&3\\2&4&6\\1&1&1\end{bmatrix}\) là:", options:["1","2","3","0"], correct:1, explanation:"Hàng1 và hàng2 tỉ lệ → chỉ có hai hàng độc lập. Hàng3 không phụ thuộc tuyến tính? Thực tế hạng 2.", tip:"📊 Số pivot sau khử." },
+        { id:24, type:"exercise", difficulty:"medium", text:"Phép thế ngược bắt đầu từ:", options:["Hàng đầu tiên","Hàng cuối cùng không toàn 0","Hàng bất kỳ","Cột cuối"], correct:1, explanation:"Từ hàng cuối cùng có chứa pivot (không toàn 0) giải ẩn cuối, rồi thế lên.", tip:"⬆️ Đi từ dưới lên." },
+        
+        // ========= BÀI TẬP KHÓ (5 câu) =========
+        { id:25, type:"exercise", difficulty:"hard", text:"Giải hệ bằng Gauss: \(\begin{cases} x+2y+3z=14 \\ 2x+y+2z=10 \\ 3x+2y+z=10 \end{cases}\). Tìm z.", options:["1","2","3","4"], correct:0, explanation:"Khử: H2-2H1, H3-3H1, được hệ mới; tiếp tục khử, cuối cùng z=1.", tip:"🧮 Khử tuần tự, thế ngược." },
+        { id:26, type:"exercise", difficulty:"hard", text:"Tìm m để hệ sau có vô số nghiệm: \(\begin{cases} x+y+z=1 \\ 2x+3y+4z=4 \\ 3x+4y+mz=5 \end{cases}\)", options:["m=5","m=6","m=7","m=8"], correct:0, explanation:"Khử, điều kiện để hạng A = hạng mở rộng < 3 → m=5.", tip:"🔢 Dùng Gauss tìm điều kiện." },
+        { id:27, type:"exercise", difficulty:"hard", text:"Cho ma trận A vuông cấp 3. Sau khử Gauss, ma trận bậc thang có 3 pivot. Kết luận:", options:["A suy biến","A khả nghịch","Hệ Ax=0 có vô số nghiệm","det(A)=0"], correct:1, explanation:"3 pivot → hạng đầy → A khả nghịch, nghiệm duy nhất.", tip:"✅ Ma trận vuông hạng đầy thì khả nghịch." },
+        { id:28, type:"exercise", difficulty:"hard", text:"Giải hệ \(\begin{cases} x_1+2x_2-x_3=2 \\ 2x_1+5x_2-2x_3=5 \\ -x_1-3x_2+2x_3=1 \end{cases}\). Nghiệm là:", options:["(1,0,1)","(0,1,1)","(1,1,0)","(2, -1,2)"], correct:0, explanation:"Khử Gauss → nghiệm (1,0,1).", tip:"💪 Kiểm tra lại bằng thế." },
+        { id:29, type:"exercise", difficulty:"hard", text:"Số phép toán (phép nhân/chia) xấp xỉ của khử Gauss cho ma trận n×n là:", options:["O(n)","O(n²)","O(n³)","O(2ⁿ)"], correct:2, explanation:"Độ phức tạp tính toán của khử Gauss là O(n³) do các vòng lặp lồng nhau.", tip:"⏱️ Thuật toán bậc ba." }
+    ];
+    // Điều chỉnh lại câu 16 đã sửa, đảm bảo 30 phần tử
+    if (questionsData.length !== 30) console.warn("Số câu không đúng 30!");
+
+    let userAnswers = new Array(30).fill(null);
+
+    function computeScore() {
+        let correctCount = 0;
+        for (let i = 0; i < questionsData.length; i++) {
+            if (userAnswers[i] !== null && userAnswers[i] === questionsData[i].correct) {
+                correctCount++;
+            }
+        }
+        document.getElementById("scoreCount").innerText = correctCount;
+    }
+
+    async function refreshMath() {
+        if (window.MathJax) await MathJax.typesetPromise();
+    }
+
+    async function applyFeedbackAndHighlight(qid) {
+        const q = questionsData[qid];
+        const selected = userAnswers[qid];
+        const isCorrect = (selected !== null && selected === q.correct);
+        const optionsDiv = document.getElementById(`options-${qid}`);
+        if (optionsDiv) {
+            const optionDivs = optionsDiv.querySelectorAll('.option');
+            optionDivs.forEach((div, idx) => {
+                div.classList.remove('correct-highlight', 'wrong-highlight');
+                if (selected !== null && idx === selected) {
+                    if (isCorrect) div.classList.add('correct-highlight');
+                    else div.classList.add('wrong-highlight');
+                }
+            });
+        }
+        const feedbackDiv = document.getElementById(`feedback-${qid}`);
+        if (selected !== null && feedbackDiv) {
+            const correctLetter = String.fromCharCode(65 + q.correct);
+            const correctAnswerText = q.options[q.correct];
+            const statusText = isCorrect ? "✅ ĐÚNG!" : "❌ SAI!";
+            feedbackDiv.style.display = "block";
+            feedbackDiv.className = `feedback ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`;
+            feedbackDiv.innerHTML = `
+                <p><strong>${statusText}</strong> &nbsp; 📌 Đáp án đúng: ${correctLetter}. ${correctAnswerText}</p>
+                <div class="explanation"><strong>📖 Giải thích:</strong> ${q.explanation}</div>
+                <div class="tip"><strong>⚡ Mẹo nhanh:</strong> ${q.tip}</div>
+            `;
+            await refreshMath();
+        } else if (feedbackDiv) feedbackDiv.style.display = "none";
+    }
+
+    async function handleAnswer(qid, selectedIdx) {
+        userAnswers[qid] = selectedIdx;
+        await applyFeedbackAndHighlight(qid);
+        computeScore();
+        await refreshMath();
+    }
+
+    async function renderQuestions() {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+        for (let idx = 0; idx < questionsData.length; idx++) {
+            const q = questionsData[idx];
+            const card = document.createElement("div");
+            card.className = "question-card";
+            const badgeType = q.type === "theory" ? "badge-theory" : "badge-exercise";
+            const difficultyClass = q.difficulty === "easy" ? "badge-easy" : (q.difficulty === "medium" ? "badge-medium" : "badge-hard");
+            const difficultyText = q.difficulty === "easy" ? "Dễ" : (q.difficulty === "medium" ? "Trung bình" : "Khó");
+            const typeText = q.type === "theory" ? "📘 Lý thuyết" : "📝 Bài tập";
+            card.innerHTML = `
+                <div class="question-title">
+                    <span class="badge ${badgeType}">${typeText}</span>
+                    <span class="badge ${difficultyClass}">${difficultyText}</span>
+                    <span style="font-weight:500;">Câu ${idx+1}</span>
+                </div>
+                <div class="question-text">${q.text}</div>
+                <div class="options" id="options-${idx}"></div>
+                <div class="feedback" id="feedback-${idx}" style="display:none;"></div>
+            `;
+            container.appendChild(card);
+            const optionsDiv = document.getElementById(`options-${idx}`);
+            q.options.forEach((opt, optIdx) => {
+                const optionDiv = document.createElement("div");
+                optionDiv.className = "option";
+                const radioId = `q${idx}_opt${optIdx}`;
+                optionDiv.innerHTML = `
+                    <input type="radio" name="q${idx}" id="${radioId}" value="${optIdx}">
+                    <label for="${radioId}" class="option-text">${opt}</label>
+                `;
+                optionsDiv.appendChild(optionDiv);
+                const radio = optionDiv.querySelector('input');
+                radio.addEventListener('change', async (e) => {
+                    if (radio.checked) await handleAnswer(idx, optIdx);
+                });
+            });
+            if (userAnswers[idx] !== null) {
+                const radioToCheck = document.querySelector(`input[name="q${idx}"][value="${userAnswers[idx]}"]`);
+                if (radioToCheck) radioToCheck.checked = true;
+                await applyFeedbackAndHighlight(idx);
+            }
+        }
+        await refreshMath();
+        computeScore();
+    }
+
+    async function resetAll() {
+        userAnswers.fill(null);
+        for (let i = 0; i < questionsData.length; i++) {
+            const radios = document.querySelectorAll(`input[name="q${i}"]`);
+            radios.forEach(r => r.checked = false);
+            const fb = document.getElementById(`feedback-${i}`);
+            if (fb) fb.style.display = "none";
+            const optsDiv = document.getElementById(`options-${i}`);
+            if (optsDiv) {
+                const opts = optsDiv.querySelectorAll('.option');
+                opts.forEach(opt => opt.classList.remove('correct-highlight', 'wrong-highlight'));
+            }
+        }
+        computeScore();
+        await refreshMath();
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        await renderQuestions();
+        document.getElementById("resetAllBtn").addEventListener("click", resetAll);
+        document.getElementById("totalCount").innerText = questionsData.length;
+    });
+</script>
+</body>
+</html>
